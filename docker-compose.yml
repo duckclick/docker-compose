@@ -1,0 +1,36 @@
+version: '3'
+services:
+  redis:
+    image: 'redis:alpine'
+  wing:
+    build: https://github.com/duckclick/wing.git#master
+    ports:
+      - '7273:7273'
+    volumes:
+      - ./wing.yml:/go/src/github.com/duckclick/wing/application.yml
+    depends_on:
+      - redis
+  beak:
+    build: https://github.com/duckclick/beak.git#master
+    ports:
+      - '7274:7274'
+    environment:
+      - REDIS_HOST=redis
+      - PROXY_HOST=http://localhost:7275
+    depends_on:
+      - redis
+      - proxy
+  eye:
+    build: https://github.com/duckclick/eye.git#master
+    ports:
+      - '7272:7272'
+    environment:
+      - WING_HOST=https://wing:7273
+    depends_on:
+      - wing
+  proxy:
+    build: https://github.com/duckclick/proxy.git#master
+    ports:
+      - '7275:7275'
+    environment:
+      - BEAK_HOST=http://localhost:7274

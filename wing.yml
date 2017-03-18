@@ -1,0 +1,7 @@
+tls_cert_file: server.crt
+tls_key_file: server.key
+
+exporter: redis
+redis_exporter:
+  host: redis
+  port: 6379
